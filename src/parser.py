@@ -20,9 +20,9 @@ def get_label():
     # print(label_dic)
     return label_dic
 
-def divide_into_folds(label_dic, num_folds=5):
+def divide_into_folds(label_dic, seed=1999, num_folds=5):
     dataset = []
-    random.seed(config.random_seed)
+    random.seed(seed)
     for _ in range(num_folds):
         dataset.append([])
     for item in label_dic:
