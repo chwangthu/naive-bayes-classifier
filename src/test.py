@@ -23,7 +23,8 @@ if __name__ == "__main__":
         tep_acc = {}
         for i in range(5):
             for train_per in config.train_per:
-                print("Using fold " + str(i) + " Training percent: " + str(train_per))
+                print("--------------------------------------------")
+                print("Using fold: %d , training percent: %2d%%" %(i, train_per*100))
                 (trainset, testset) = get_set(i)
                 (words_num, total_words) = train(trainset, train_per)
             # with open("../train_data/num_per_words", 'rb') as f:
@@ -38,7 +39,7 @@ if __name__ == "__main__":
                     tep_acc[str(train_per)] += acc_fold
                 else:
                     tep_acc[str(train_per)] = acc_fold
-                print(tep_acc)
+                # print(tep_acc)
         print(tep_acc)
         for item in tep_acc.keys():
             tep_acc[item] = tep_acc[item] / 5

@@ -2,3 +2,4 @@ trec06c-utf8/
 *.DS_Store
 dataset/
 __pycache__/
+train_data/

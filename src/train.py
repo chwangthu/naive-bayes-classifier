@@ -48,7 +48,7 @@ def train(trainset, train_per=1):
     random.seed(config.train_seed)
     words_num = { "spam": {}, "ham": {}} # for each category, the num of every kinds of words
     total_words = { "spam": 0, "ham": 0} # total words for each category
-    print("Total " + str(int(len(trainset)*train_per)) + " to train.")
+    # print("Total " + str(int(len(trainset)*train_per)) + " to train.")
     num_trained = 0
     spam_words = 0
     ham_words = 0
@@ -79,8 +79,8 @@ def train(trainset, train_per=1):
         # if(num_trained == 10):
         #     break
         if num_trained % 5000 == 0:
-            print("Training process: " + str(num_trained) + "/" + str(len(trainset)))
+            print("\r Training process: %d/%d" %(num_trained, int(len(trainset)*train_per)), end=" ")
     print("Training finished.")
     # print(total_words)
-    write_res(words_num, total_words)
+    # write_res(words_num, total_words)
     return words_num, total_words

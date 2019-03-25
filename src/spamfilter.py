@@ -37,7 +37,7 @@ class BayesSpamFilter(BayesClassifier):
     def classify(self):
         num_tested = 0
         num_correct = 0
-        print("Total " + str(len(self.testset)) + " to test")
+        # print("Total " + str(len(self.testset)) + " to test")
         for line in self.testset:
             try:
                 f = open(line[0])
@@ -64,8 +64,9 @@ class BayesSpamFilter(BayesClassifier):
             if line[1] == pred:
                 num_correct += 1
             if(num_tested % 1000 == 0):
-                print("Tested: "+str(num_tested)+", correct "+str(num_correct)+" acc="+str(float(num_correct/num_tested)))
-        print("Final tested: "+str(num_tested)+", correct "+str(num_correct)+" acc="+str(float(num_correct/num_tested)))
+                print("\r Tested: %5d/%d, correct: %5d, acc: %.8f%%" %(num_tested, len(self.testset), num_correct, float(num_correct/num_tested)*100), end=" ")
+
+        print("\r Final tested: %5d, correct: %5d, acc: %.8f%%" %(num_tested, num_correct, float(num_correct/num_tested*100)))
         return float(num_correct/num_tested)
 
     def cal_py(self, y):
