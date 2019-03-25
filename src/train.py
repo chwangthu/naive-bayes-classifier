@@ -43,12 +43,13 @@ def split_email(content):
     re_words = re.compile(u"[\u4e00-\u9fa5]+")
     return re.findall(re_words, content)
 
-def train(trainset, train_per=1):
+def train(trainset, train_per=1, use_mailer=False, use_from=False):
     # The nums of each word in spam or ham emails
     random.seed(config.train_seed)
     words_num = { "spam": {}, "ham": {}} # for each category, the num of every kinds of words
     total_words = { "spam": 0, "ham": 0} # total words for each category
     # print("Total " + str(int(len(trainset)*train_per)) + " to train.")
+    mailer_dict = {"spam": {}, "ham": {}}
     num_trained = 0
     spam_words = 0
     ham_words = 0
@@ -64,6 +65,24 @@ def train(trainset, train_per=1):
             continue
 
         res = split_email(content)
+
+        # for mailer feature
+        mailer_pattern = re.compile(u"X-Mailer.*", re.IGNORECASE)
+        mailer = re.findall(mailer_pattern, content)
+        if len(mailer) == 1:
+            if mailer_dict[item[1]].__contains__(mailer[0]):
+                mailer_dict[item[1]][mailer[0]] += 1
+            else:
+                mailer_dict[item[1]][mailer[0]] = 1
+
+        # for from feature
+        from_pattern = re.compile(u"From.*@.*", re.IGNORECASE)
+        recv_from = re.findall(from_pattern, content)
+        if len(recv_from) != 0 and use_from:
+            recv_from = recv_from[0].split('@')[-1]
+            email = recv_from.split('>')[0].split(')')[0].split(' ')[0]
+            # print(email)
+            res.append(email)
 
         if item[1] == "spam":
             total_words["spam"] += len(res)
@@ -83,4 +102,6 @@ def train(trainset, train_per=1):
     print("Training finished.")
     # print(total_words)
     # write_res(words_num, total_words)
+    if use_mailer:
+        return words_num, total_words, mailer_dict
     return words_num, total_words
