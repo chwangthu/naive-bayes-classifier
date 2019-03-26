@@ -29,15 +29,16 @@
 - `train.py`:
   - `get_set`: 从5折数据中得到测试集和训练集
   - `train`: 计算训练集中spam和ham邮件的个数，计算每个词在spam和ham出现的次数，用于后面计算概率使用。参数 `train_per` 表示使用训练集的比例。
-
 - `spamfilter.py`:
   - `class BayesClassifier`: 定义了 `cal_py`, `cal_p_xi_y`, `classify`的抽象类
   - `class BayesSpamFilter`: 
     - `cal_py`: 计算spam和ham邮件的概率
     - `cal_p_xi_y`: 计算等式(1)中的 $P(x_{i}|y)$ ，也就是当`y`是spam或者ham时词 $x_{i}$ 出现的概率
-    - `split_email`: to be finished
-
+    - `split_email`: 提取中邮件的中文部分
 - `test.py`：
+  - `change_trainset`: 完成了issue1的要求，3种训练集下执行五次五折交叉验证
+  - `change_lambda`: 完成了issue2的要求，改变$\alpha$看各个metric的变化
+  - `add_features`：完成了issue3的要求，可以选择是否使用发件人邮箱和Mailer信息
 
 
 
@@ -114,6 +115,13 @@ $$
 
 #### Issue 3: Specific features
 
+前面的讨论都是指用了邮件中的中文分词信息，对于邮件头中的有用信息并没有使用。我才用了两种可能会影响准确率的信息：
+
+- 发件人使用的Mailer，种类有Foxmail, Microsoft Express等等，垃圾邮件很多是群发的，因此使用的Mailer应当有助于判定
+- 发件人的邮件域名，比如edu.cn发出的是垃圾邮件可能性就比较下
+
+下表中列出了单独使用和一起使用这两种特征时带来的结果变化：($\alpha=$ 1e-50, fold_seed=1999)
+
 |    Feature    | Accuracy | Precision | Recall  | F1 Score |
 | :-----------: | :------: | :-------: | :-----: | :------: |
 |    Mailer     | 98.9802  |  99.1269  | 99.3370 | 99.2318  |
@@ -121,3 +129,21 @@ $$
 | Mailer & From | 99.2386  |  99.3800  | 99.4275 | 99.4262  |
 |   Baseline    | 98.6227  |  98.9390  | 98.9846 | 98.9617  |
 
+可以看出：
+
+- 单独使用Mailer和From特征都能将98.6%的准确率提升到99%左右，这对于本身就很高的准确率算是很大的提升了。一起使用更是能提升到99.2%。
+- 单独使用Mailer和From时，Mailer对于Recall的提升较好，而From对于Precision的提升较好。说明Mailer能够有助于spam的识别，很多垃圾邮件都使用了一种邮箱。而From能够区分负样本，比如edu.cn和cernet.com就很大概率是ham。
+- 另外，可以对Mailer和From的特征加大权重，计算概率的时候乘10，可以进一步提高准确率，说明这两种特征是很有用的。
+
+
+
+#### 3. 实验总结
+
+这次实验实现了一个朴素贝叶斯分类器，总体上还是比较简单的，最终实现了99.2的准确率和99.4的F1 Score。可以做如下总结：
+
+- 训练集对结果的大小有一定影响，但是50%已经接近够用
+- 使用了不同的评价参数，可以帮助我们更好的评判实验结果
+- 零概率问题$\alpha$对结果影响很大
+- 使用不同的特征能够提高正确率
+
+综上，这次实验虽然不难，但是学到的东西还是很多的。

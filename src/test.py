@@ -113,15 +113,15 @@ def change_lambda():
     print(lam_list)
     print(res_list)
 
-def add_features():
+def add_features(use_mailer=True, use_from=True):
     label_dic = get_label()
     divide_into_folds(label_dic)
     (acc, prec, recall, f1) = (0, 0, 0, 0)
     for i in range(5):
         (trainset, testset) = get_set(i)
-        (words_num, total_words, mailer_dict) = train(trainset=trainset, use_mailer=True, use_from=True)
-        # print(mailer_dict) 
-        spam_filter = BayesSpamFilter(x_num=words_num, total_words=total_words, testset=testset, lam=1e-50, use_mailer=False, mailer_dict=mailer_dict, use_from=True)
+        (words_num, total_words, mailer_dict) = train(trainset=trainset, use_mailer=True, use_from=use_from)
+        print(mailer_dict) 
+        spam_filter = BayesSpamFilter(x_num=words_num, total_words=total_words, testset=testset, lam=1e-50, use_mailer=use_mailer, mailer_dict=mailer_dict, use_from=use_from)
         acc_fold, prec_fold, recall_fold, f1_fold = spam_filter.classify()
         acc += acc_fold
         prec += prec_fold
